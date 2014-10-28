@@ -1,29 +1,27 @@
 #!/bin/sh
 
+LANG=C
+LC_ALL=C
+export LANG LC_ALL
+
 me1=${0##*/}
-echo me1=$me1
-if test -z "$father"; then 
-  father=${0%/*}
-  export father
-fi
-if test -z "$father"; then
-  father=.
-fi
-echo father=$father
-echo me1=$me1 logfile=$logfile
-if test -n "$debug" && test -z "$logfile"; then
-  logfile=$(date "+%y-%m-%d_%H.%M.%S")
-  logfile=$(echo /tmp/$logfile.$me1)
-  export logfile
-  echo me1=$me1 logfile=$logfile
-  eval "$0" "$@" | tee "$logfile"
-  exit
+shdir=${0%/*}
+
+if test "$me1" = "$shdir"; then
+  shdir=.
+elif test -z "$shdir"; then
+  shdir=.
+fi &&
+if test "$shdir" = .; then
+  PATH=$PWD:$PATH
 else
-  echo me1=$me1 no logfile
+  PATH=$shdir:$PATH
 fi
 
+export shdir PATH &&
 
-projectsepicsgit=~/projects/epics/upstream/git
+. ${shdir}/apt-yum-port.inc &&
+. ${shdir}/which-directories.inc &&
 
 srcurl=subversion.xray.aps.anl.gov/synApps
 projectX=xray.aps.anl.gov.synApps
@@ -31,7 +29,7 @@ projectX=xray.aps.anl.gov.synApps
 localSVNmirror=~/projects/epics/upstream/localSVNmirrors/$srcurl
 SVN=https://$srcurl
 
-export localSVNmirror projectsepicsgit SVN projectX
+export localSVNmirror homeepicsgit SVN projectX
 
-. $father/helper-xor-xray.sh
+. $shdir/helper-xor-xray.sh
 exit

@@ -1,27 +1,7 @@
-####  mirror, suberversion -> subversion
-#apt or yum or port
-if uname -a | egrep "CYGWIN|MING" >/dev/null; then
-  SUDO=
-else
-  SUDO=sudo
-fi
-APTGET=/bin/false
-if type apt-get >/dev/null 2>/dev/null; then
-  APTGET="$SUDO apt-get install"
-fi
-if type yum >/dev/null 2>/dev/null; then
-  APTGET="$SUDO /usr/bin/yum install"
-fi
-# port (Mac Ports)
-if test -x /opt/local/bin/port; then
-  APTGET="$SUDO port install"
-fi
-export APTGET
-if ! type svnadmin >/dev/null 2>/dev/null; then
-  package=subversion
-  echo $APTGET $package
-  $APTGET $package
-fi &&
+
+addpacketifneeded svn subversion &&
+addpacketifneeded svnadmin subversion &&
+
 (
   if ! test -d $localSVNmirror; then
     mkdir -p $localSVNmirror
@@ -63,9 +43,9 @@ fi &&
 
 #### git clone via local suberversion mirror
 (
-  mkdir -p "$projectsepicsgit" &&
-  cd $projectsepicsgit || {
-    echo >&2 cd $projectsepicsgit failed
+  mkdir -p "$homeepicsgit" &&
+  cd $homeepicsgit || {
+    echo >&2 cd $homeepicsgit failed
     exit 1
   }
 
@@ -80,9 +60,8 @@ fi &&
     cmd=$(echo git svn clone file://$localSVNmirror $dir1)
     echo LINENO=$LINENO PWD=$PWD cmd=$cmd
     eval $cmd 2>&1 || {
-      package=libsvn-perl
-      echo $APTGET $package
-      $APTGET $package
+      addpacketifneeded libsvn-perl ||
+      addpacketifneeded git-svn ||
       exit 1
     }
   fi

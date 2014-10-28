@@ -5,34 +5,28 @@ LC_ALL=C
 export LANG LC_ALL
 
 me1=${0##*/}
-father=${0%/*}
+shdir=${0%/*}
 
-if test "$me1" = "$father"; then
-  father=.
-elif test -z "$father"; then
-  father=.
+if test "$me1" = "$shdir"; then
+  shdir=.
+elif test -z "$shdir"; then
+  shdir=.
 fi &&
-if test "$father" = .; then
-	PATH=$PWD:$PATH
+if test "$shdir" = .; then
+  PATH=$PWD:$PATH
 else
-	PATH=$father:$PATH
+  PATH=$shdir:$PATH
 fi
 
-#echo LINENO=$LINENO me1=$me1
-#echo LINENO=$LINENO father=$father
-#echo LINENO=$LINENO PATH=$PATH
+export shdir PATH &&
 
-export father PATH &&
-
-which git-remote-hg &&
-
-. ${father}/apt-yum-port.inc &&
-. ${father}/which-directories.inc &&
+. ${shdir}/apt-yum-port.inc &&
+. ${shdir}/which-directories.inc &&
 
 epics4=$(echo pvCommonCPP pvDataCPP pvAccessCPP pvIOCCPP pvaSrv exampleCPP\
          pvDataJava pvDataJava pvAccessJava exampleJava easyPVAJava)
 
-for d in $projectsepicsgit projectsepicshg $projectsepicsgitepics4 $projectsepicshgepics4; do
+for d in $homeepicsgit homeepicshg $homeepicsgitepics4 $homeepicshgepics4; do
   mkdir -p $d || {
     echo >&2 mkdir -p $d failed
     exit 1
@@ -44,7 +38,7 @@ addpacketifneeded hg mercurial
 
 ### epics4 via mercurial
 (
-  cd $projectsepicshgepics4 && {
+  cd $homeepicshgepics4 && {
     for d in $epics4; do
       if  test -d "$d"; then
         (
@@ -66,7 +60,7 @@ addpacketifneeded hg mercurial
 
 ### epics4 via git-hg
 (
-  cd $projectsepicsgitepics4 && {
+  cd $homeepicsgitepics4 && {
     for d in $epics4; do
       if  test -d "$d"; then
         (

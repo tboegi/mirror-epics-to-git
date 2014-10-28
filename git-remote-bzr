@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Do we have bzr ?
+bzr_python=$(bzr --version | grep "Python interpreter:")
+if test -n "$bzr_python"; then
+  #echo bzr_python=$bzr_python
+  bzr_python=$(echo $bzr_python | sed -e 's/.* \(.*\) .*/\1/')
+  #echo bzr_python=$bzr_python
+  if ! $bzr_python -c 'import bzrlib'
+  then
+    echo >&2 bzr_python=$bzr_python
+    exit 1
+  fi
+else
+  bzr_python=python
+fi
+"$bzr_python" ${0}.py "$@"

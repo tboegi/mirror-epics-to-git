@@ -1,4 +1,5 @@
 
+addpacketifneeded svn subversion &&
 addpacketifneeded svnadmin subversion &&
 
 (
@@ -42,9 +43,9 @@ addpacketifneeded svnadmin subversion &&
 
 #### git clone via local suberversion mirror
 (
-  mkdir -p "$projectsepicsgit" &&
-  cd $projectsepicsgit || {
-    echo >&2 cd $projectsepicsgit failed
+  mkdir -p "$homeepicsgit" &&
+  cd $homeepicsgit || {
+    echo >&2 cd $homeepicsgit failed
     exit 1
   }
 
