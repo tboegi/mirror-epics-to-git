@@ -60,9 +60,9 @@ addpacketifneeded svnadmin subversion &&
     cmd=$(echo git svn clone file://$localSVNmirror $dir1)
     echo LINENO=$LINENO PWD=$PWD cmd=$cmd
     eval $cmd 2>&1 || {
-      addpacketifneeded libsvn-perl ||
-      addpacketifneeded git-svn ||
-      exit 1
+      addpacketifneeded libsvn-perl
+      addpacketifneeded git-svn
+      eval $cmd
     }
   fi
   
