@@ -1,0 +1,4 @@
+#!/bin/sh
+if which python2.7 >/dev/null 2>/dev/null; then
+	 python2.7 "$@"
+fi
