@@ -26,8 +26,9 @@ export shdir PATH &&
 srcurl=subversion.xray.aps.anl.gov/synApps
 projectX=xray.aps.anl.gov.synApps
 
-localSVNmirror=~/projects/epics/upstream/localSVNmirrors/$srcurl
+localSVNmirror=$localSVNmirrors/$srcurl
 SVN=https://$srcurl
+echo localSVNmirror=$localSVNmirror
 
 export localSVNmirror homeepicsgit SVN projectX
 
