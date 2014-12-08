@@ -1,19 +1,19 @@
 #so to say the root directory
-projectsepicsupstream=~/projects/epics/upstream
+homeepicsupstream=~/epics/upstream
 
 #Where should all git/hg/bzr live
-projectsepicsgit=$projectsepicsupstream/git
-projectsepicshg=$projectsepicsupstream/hg
-projectsepicsbzr=$projectsepicsupstream/bzr
-localSVNmirrors=$projectsepicsupstream/localSVNmirrors
+homeepicsgit=$homeepicsupstream/git
+homeepicshg=$homeepicsupstream/hg
+homeepicsbzr=$homeepicsupstream/bzr
+localSVNmirrors=$homeepicsupstream/localSVNmirrors
 
 #Where is epics base
-projectsepicsgitbase=$projectsepicsgit/base
-projectsepicsbzrbase=$projectsepicsbzr/base
+homeepicsgitbase=$homeepicsgit/base
+homeepicsbzrbase=$homeepicsbzr/base
 
 
 #Where is epics 4
-projectsepicsgitepics4=$projectsepicsgit/epics4
-projectsepicshgepics4=$projectsepicshg/epics4
+homeepicsgitepics4=$homeepicsgit/epics4
+homeepicshgepics4=$homeepicshg/epics4
 
 

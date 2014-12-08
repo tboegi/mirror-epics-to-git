@@ -5,62 +5,60 @@ LC_ALL=C
 export LANG LC_ALL
 
 me1=${0##*/}
-father=${0%/*}
+shdir=${0%/*}
 
-if test "$me1" = "$father"; then
-  father=.
-elif test -z "$father"; then
-  father=.
+if test "$me1" = "$shdir"; then
+  shdir=.
+elif test -z "$shdir"; then
+  shdir=.
 fi &&
-if test "$father" = .; then
-	PATH=$PWD:$PATH
+if test "$shdir" = .; then
+  PATH=$PWD:$PATH
 else
-	PATH=$father:$PATH
+  PATH=$shdir:$PATH
 fi
 
-#echo LINENO=$LINENO me1=$me1
-#echo LINENO=$LINENO father=$father
-#echo LINENO=$LINENO PATH=$PATH
+export shdir PATH &&
 
-export father PATH &&
+. ${shdir}/apt-yum-port.inc &&
+. ${shdir}/which-directories.inc &&
 
-which git-remote-bzr &&
+echo checking bzr git-remote-bzr &&
+addpacketifneeded bzr &&
+which git-remote-bzr || {
+  echo git-remote-bzr not found
+  echo PATH=$PATH
+  exit 1
+}
 
-. ${father}/apt-yum-port.inc &&
-. ${father}/which-directories.inc &&
-
-
-baseversions=$(echo epics-base epics-base/3.13 epics-base/3.14)
-for d in $projectsepicsgitbase $projectsepicsbzrbase ; do
+baseversions=$(echo epics-base epics-base/3.13 epics-base/3.14 epics-base/3.15)
+export baseversions
+for d in $homeepicsgitbase $homeepicsbzrbase ; do
   mkdir -p $d || {
     echo mkdir -p $d failed
     exit 1
   }
 done &&
 
-if ! which bzr; then
-  echo $APTGET bzr
-  $APTGET bzr || {
-		echo >&2 "Can not install bzr"
-		echo >&2 "Aborting"
-		exit 1
-	}
-fi &&
-
-if ! test -d $projectsepicsbzrbase/.bzr; then
+if ! test -d $homeepicsbzrbase/.bzr; then
   (
-    cd $projectsepicsbzrbase &&
+    cd $homeepicsbzrbase &&
     bzr init
   )
 fi
 
+echo LINENO=$LINENO PWD=$PWD baseversions=$baseversions &&
+
 for d in $baseversions
 do
   d2=$(echo $d | sed -e 's!/!-!')
-  if ! test -d $projectsepicsbzrbase/$d2; then
+  echo LINENO=$LINENO PWD=$PWD d2=$d2 &&
+  if ! test -d $homeepicsbzrbase/$d2; then
     (
       #clone bzr
-      cd $projectsepicsbzrbase &&
+      echo LINENO=$LINENO PWD=$PWD &&
+      cd $homeepicsbzrbase &&
+      echo LINENO=$LINENO PWD=$PWD &&
       cmd=$(echo bzr clone lp:$d $d2)
       echo PWD=$PWD cmd=$cmd &&
       eval $cmd 2>&1 || {
@@ -70,7 +68,7 @@ do
   else
     (
       #pull bzr
-      cd $projectsepicsbzrbase/$d2 &&
+      cd $homeepicsbzrbase/$d2 &&
       cmd=$(echo bzr pull)
       echo PWD=$PWD cmd=$cmd &&
       eval $cmd 2>&1 || {
@@ -82,7 +80,7 @@ done
 
 ### epics-base via bazaar
 (
-  cd $projectsepicsgitbase && {
+  cd $homeepicsgitbase && {
     for d in $baseversions
     do
       d2=$(echo $d | sed -e 's!/!-!')
@@ -95,8 +93,7 @@ done
           }
         )
       else
-				export GIT_TRACE=1
-        cmd=$(echo git clone --mirror bzr::file:///$projectsepicsbzrbase/$d2 $d2.tmp.$$)
+        cmd=$(echo git clone --mirror bzr::file:///$homeepicsbzrbase/$d2 $d2.tmp.$$)
         echo PWD=$PWD cmd=$cmd
         eval "$cmd" 2>&1
         cmd= $(echo mv $d2.tmp.$$ $d2.git)

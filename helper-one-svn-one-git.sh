@@ -1,4 +1,5 @@
 
+addpacketifneeded svn subversion &&
 addpacketifneeded svnadmin subversion &&
 
 (
@@ -42,9 +43,9 @@ addpacketifneeded svnadmin subversion &&
 
 #### git clone via local suberversion mirror
 (
-  mkdir -p "$projectsepicsgit" &&
-  cd $projectsepicsgit || {
-    echo >&2 cd $projectsepicsgit failed
+  mkdir -p "$homeepicsgit" &&
+  cd $homeepicsgit || {
+    echo >&2 cd $homeepicsgit failed
     exit 1
   }
 
@@ -59,9 +60,9 @@ addpacketifneeded svnadmin subversion &&
     cmd=$(echo git svn clone file://$localSVNmirror $dir1)
     echo LINENO=$LINENO PWD=$PWD cmd=$cmd
     eval $cmd 2>&1 || {
-      addpacketifneeded libsvn-perl ||
-      addpacketifneeded git-svn ||
-      exit 1
+      addpacketifneeded libsvn-perl
+      addpacketifneeded git-svn
+      eval $cmd
     }
   fi
   
@@ -116,6 +117,21 @@ addpacketifneeded svnadmin subversion &&
           cmd=$(echo git checkout remotes/origin/trunk)
           echo LINENO=$LINENO PWD=$PWD cmd=$cmd
           eval "$cmd" || exit 1
+        )  &&
+        (
+          pfx=origin/tags/
+          cd $subdir &&
+          tags=$(git branch -r | grep $pfx) &&
+          for rtag in $tags; do
+            ltag=$(echo $rtag | sed -e "s%$pfx%%g") &&
+            cmd=$(echo git checkout $rtag) &&
+            echo LINENO=$LINENO PWD=$PWD cmd=$cmd &&
+            eval "$cmd" || exit 1
+            cmd=$(echo git tag -f $ltag) &&
+            echo LINENO=$LINENO PWD=$PWD cmd=$cmd &&
+            eval "$cmd" || exit 1
+          done
+          git checkout origin/trunk
         )
       fi
     done
