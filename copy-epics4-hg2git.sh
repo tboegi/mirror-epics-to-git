@@ -7,18 +7,27 @@ export LANG LC_ALL
 me1=${0##*/}
 shdir=${0%/*}
 
-if test "$me1" = "$shdir"; then
-  shdir=.
-elif test -z "$shdir"; then
-  shdir=.
+if ! type git-remote-hg >/dev/null 2>/dev/null; then
+  if ! test -d git-remote-hg; then
+    git clone https://github.com/tboegi/git-remote-hg.git
+  fi &&
+  if  test -d git-remote-hg; then
+    ( cd git-remote-hg &&
+        git checkout ed2f48e6b512cf5459e
+     )
+  fi &&
+  if test "$me1" = "$shdir"; then
+    shdir=.
+  elif test -z "$shdir"; then
+    shdir=.
+  fi &&
+  if test "$shdir" = .; then
+    PATH=$PATH:$PWD/git-remote-hg
+  else
+    PATH=$PATH:$shdir/git-remote-hg
+  fi
+  export shdir PATH
 fi &&
-if test "$shdir" = .; then
-  PATH=$PWD:$PATH
-else
-  PATH=$shdir:$PATH
-fi
-
-export shdir PATH &&
 
 . ${shdir}/apt-yum-port.inc &&
 . ${shdir}/which-directories.inc &&
