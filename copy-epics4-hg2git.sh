@@ -33,8 +33,8 @@ for d in $homeepicsgit homeepicshg $homeepicsgitepics4 $homeepicshgepics4; do
   }
 done
 
-addpacketifneeded python
-addpacketifneeded hg mercurial
+addpacketifneeded python &&
+addpacketifneeded hg mercurial &&
 
 ### epics4 via mercurial
 (
@@ -59,6 +59,8 @@ addpacketifneeded hg mercurial
 
 
 ### epics4 via git-hg
+addpacketifneeded python &&
+addpacketifneeded hg mercurial &&
 (
   cd $homeepicsgitepics4 && {
     for d in $epics4; do
