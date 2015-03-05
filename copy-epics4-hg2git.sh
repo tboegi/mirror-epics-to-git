@@ -13,7 +13,7 @@ if ! type git-remote-hg >/dev/null 2>/dev/null; then
   fi &&
   if  test -d git-remote-hg; then
     ( cd git-remote-hg &&
-        git checkout ed2f48e6b512cf5459e
+        git checkout 91091f845ea5f87bbc2509625
      )
   fi &&
   if test "$me1" = "$shdir"; then
