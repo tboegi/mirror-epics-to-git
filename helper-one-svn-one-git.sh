@@ -117,21 +117,6 @@ addpacketifneeded svnadmin subversion &&
           cmd=$(echo git checkout remotes/origin/trunk)
           echo LINENO=$LINENO PWD=$PWD cmd=$cmd
           eval "$cmd" || exit 1
-        )  &&
-        (
-          pfx=origin/tags/
-          cd $subdir &&
-          tags=$(git branch -r | grep $pfx) &&
-          for rtag in $tags; do
-            ltag=$(echo $rtag | sed -e "s%$pfx%%g") &&
-            cmd=$(echo git checkout $rtag) &&
-            echo LINENO=$LINENO PWD=$PWD cmd=$cmd &&
-            eval "$cmd" || exit 1
-            cmd=$(echo git tag -f $ltag) &&
-            echo LINENO=$LINENO PWD=$PWD cmd=$cmd &&
-            eval "$cmd" || exit 1
-          done
-          git checkout origin/trunk
         )
       fi
     done
