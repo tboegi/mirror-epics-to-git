@@ -7,18 +7,27 @@ export LANG LC_ALL
 me1=${0##*/}
 shdir=${0%/*}
 
-if test "$me1" = "$shdir"; then
-  shdir=.
-elif test -z "$shdir"; then
-  shdir=.
+if ! type git-remote-hg >/dev/null 2>/dev/null; then
+  if ! test -d git-remote-hg; then
+    git clone https://github.com/tboegi/git-remote-hg.git
+  fi &&
+  if  test -d git-remote-hg; then
+    ( cd git-remote-hg &&
+        git checkout 91091f845ea5f87bbc2509625
+     )
+  fi &&
+  if test "$me1" = "$shdir"; then
+    shdir=.
+  elif test -z "$shdir"; then
+    shdir=.
+  fi &&
+  if test "$shdir" = .; then
+    PATH=$PATH:$PWD/git-remote-hg
+  else
+    PATH=$PATH:$shdir/git-remote-hg
+  fi
+  export shdir PATH
 fi &&
-if test "$shdir" = .; then
-  PATH=$PWD:$PATH
-else
-  PATH=$shdir:$PATH
-fi
-
-export shdir PATH &&
 
 . ${shdir}/apt-yum-port.inc &&
 . ${shdir}/which-directories.inc &&
@@ -33,8 +42,8 @@ for d in $homeepicsgit homeepicshg $homeepicsgitepics4 $homeepicshgepics4; do
   }
 done
 
-addpacketifneeded python
-addpacketifneeded hg mercurial
+addpacketifneeded python &&
+addpacketifneeded hg mercurial &&
 
 ### epics4 via mercurial
 (
@@ -59,6 +68,8 @@ addpacketifneeded hg mercurial
 
 
 ### epics4 via git-hg
+addpacketifneeded python &&
+addpacketifneeded hg mercurial &&
 (
   cd $homeepicsgitepics4 && {
     for d in $epics4; do

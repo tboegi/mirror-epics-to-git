@@ -121,6 +121,11 @@ addpacketifneeded svnadmin subversion &&
         echo "subdir=$subdir", can not continue
         exit 1
       fi &&
+      if test "$subdir" = areaDetector; then
+        echo "PWD/dir1=$PWD/$dir1", continue
+        echo "subdir=$subdir", continue
+        continue
+      fi &&
       locallocalSVNmirror=$(echo $localSVNmirror | sed -e "s%^$HOME%~%") &&
       echo locallocalSVNmirror="$locallocalSVNmirror" &&
       if ! test -d "$subdir"; then
@@ -136,6 +141,7 @@ addpacketifneeded svnadmin subversion &&
       fi || mv  "$subdir" $$
       if test -d "$subdir"; then
         (
+          pfx=origin/tags/
           cd $subdir &&
           cmd=$(echo git svn fetch)
           echo LINENO=$LINENO PWD=$PWD cmd=$cmd
@@ -143,6 +149,7 @@ addpacketifneeded svnadmin subversion &&
           cmd=$(echo git checkout remotes/origin/trunk)
           echo LINENO=$LINENO PWD=$PWD cmd=$cmd
           eval "$cmd" || exit 1
+          git checkout origin/trunk
         )
       fi
     done
