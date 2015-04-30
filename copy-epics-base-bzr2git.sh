@@ -31,7 +31,7 @@ which git-remote-bzr || {
   exit 1
 }
 
-baseversions=$(echo epics-base epics-base/3.13 epics-base/3.14 epics-base/3.15)
+baseversions=$(echo epics-base epics-base/3.13 epics-base/3.14 epics-base/3.15 epics-base/3.16)
 export baseversions
 for d in $homeepicsgitbase $homeepicsbzrbase ; do
   mkdir -p $d || {
