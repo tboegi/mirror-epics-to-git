@@ -121,6 +121,11 @@ addpacketifneeded svnadmin subversion &&
         echo "subdir=$subdir", can not continue
         exit 1
       fi &&
+      ###########################################
+      # only motor !
+      if ! test $subdir = motor; then
+        continue
+      fi
       locallocalSVNmirror=$(echo $localSVNmirror | sed -e "s%^$HOME%~%") &&
       echo locallocalSVNmirror="$locallocalSVNmirror" &&
       if ! test -d "$subdir"; then
@@ -136,10 +141,40 @@ addpacketifneeded svnadmin subversion &&
       fi || mv  "$subdir" $$
       if test -d "$subdir"; then
         (
+          pfx=origin/tags/
           cd $subdir &&
+          # fetch
           cmd=$(echo git svn fetch)
           echo LINENO=$LINENO PWD=$PWD cmd=$cmd
           eval "$cmd" || exit 1
+          # git clean/stash
+          cmd=$(echo git clean -fd) &&
+          echo LINENO=$LINENO PWD=$PWD cmd=$cmd &&
+          eval "$cmd" || exit 1
+          #
+          if true; then
+            tags=$(git branch -r | grep $pfx) &&
+            for rtag in $tags; do
+              ltag=$(echo $rtag | sed -e "s%$pfx%%g") &&
+              # git clean
+              cmd=$(echo git clean -fd) &&
+              echo LINENO=$LINENO PWD=$PWD cmd=$cmd &&
+              eval "$cmd" || exit 1
+              # git stash
+              cmd=$(echo git stash) &&
+              echo LINENO=$LINENO PWD=$PWD cmd=$cmd &&
+              eval "$cmd" || exit 1
+              #checkout rtag
+              cmd=$(echo git checkout $rtag) &&
+              echo LINENO=$LINENO PWD=$PWD cmd=$cmd &&
+              eval "$cmd" || exit 1
+              #tag it
+              cmd=$(echo git tag -f $ltag) &&
+              echo LINENO=$LINENO PWD=$PWD cmd=$cmd &&
+              eval "$cmd" || exit 1
+            done
+          fi
+          #
           cmd=$(echo git checkout remotes/origin/trunk)
           echo LINENO=$LINENO PWD=$PWD cmd=$cmd
           eval "$cmd" || exit 1
