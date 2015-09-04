@@ -143,6 +143,15 @@ addpacketifneeded svnadmin subversion &&
           cmd=$(echo git checkout remotes/origin/trunk)
           echo LINENO=$LINENO PWD=$PWD cmd=$cmd
           eval "$cmd" || exit 1
+          remotes=$(git remote)
+          if test -n "$remotes"; then
+            for remote in $remotes; do
+              echo remote=$remote
+              cmd=$(echo git push $remote origin/trunk:refs/heads/upstream-xray.aps.anl.gov.synApps)
+              echo LINENO=$LINENO PWD=$PWD cmd=$cmd
+              eval $cmd 2>&1
+            done
+          fi
         )
       fi
     done
