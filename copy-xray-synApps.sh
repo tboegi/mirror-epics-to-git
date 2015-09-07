@@ -156,6 +156,11 @@ addpacketifneeded svnadmin subversion &&
             tags=$(git branch -r | grep $pfx) &&
             for rtag in $tags; do
               ltag=$(echo $rtag | sed -e "s%$pfx%%g") &&
+              if (git tag | grep "^$ltag\$"); then
+                echo ltag=$ltag exists
+                continue
+              fi
+              echo ltag=$ltag is new
               # git clean
               cmd=$(echo git clean -fd) &&
               echo LINENO=$LINENO PWD=$PWD cmd=$cmd &&
@@ -182,7 +187,7 @@ addpacketifneeded svnadmin subversion &&
           if test -n "$remotes"; then
             for remote in $remotes; do
               echo remote=$remote
-              cmd=$(echo git push $remote origin/trunk:refs/heads/upstream-xray.aps.anl.gov.synApps)
+              cmd=$(echo git push --tags $remote origin/trunk:refs/heads/upstream-xray.aps.anl.gov.synApps)
               echo LINENO=$LINENO PWD=$PWD cmd=$cmd
               eval $cmd 2>&1
             done
